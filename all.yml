@@ -1,0 +1,10 @@
+- name: Install packages
+  ansible.builtin.dnf:
+    name:
+      - bind
+      - bind-utils
+      - chrony
+      - policycoreutils-python-utils
+      - setools
+      - setroubleshoot-server
+    state: present

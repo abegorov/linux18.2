@@ -1,0 +1,95 @@
+---
+- name: Copy named.conf
+  ansible.builtin.copy:
+    src: files/ns01/named.conf
+    dest: /etc/named.conf
+    owner: root
+    group: named
+    mode: '0640'
+  notify: Restart named
+
+- name: Copy master zone dns.lab
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/named/
+    owner: root
+    group: named
+    mode: '0660'
+  with_fileglob:
+    - files/ns01/named.dns*
+  notify: Restart named
+
+- name: Copy dynamic zone ddns.lab
+  ansible.builtin.copy:
+    src: files/ns01/named.ddns.lab
+    dest: /etc/named/dynamic/
+    owner: named
+    group: named
+    mode: '0660'
+  notify: Restart named
+
+- name: Copy dynamic zone ddns.lab.view1
+  ansible.builtin.copy:
+    src: files/ns01/named.ddns.lab.view1
+    dest: /etc/named/dynamic/
+    owner: named
+    group: named
+    mode: '0660'
+  notify: Restart named
+
+- name: Copy master zone newdns.lab
+  ansible.builtin.copy:
+    src: files/ns01/named.newdns.lab
+    dest: /etc/named/
+    owner: root
+    group: named
+    mode: '0660'
+  notify: Restart named
+
+- name: Copy rev zones
+  ansible.builtin.copy:
+    src: files/ns01/named.50.168.192.rev
+    dest: /etc/named/
+    owner: root
+    group: named
+    mode: '0660'
+  notify: Restart named
+
+- name: Copy resolv.conf to server
+  ansible.builtin.copy:
+    src: files/ns01/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy transferkey to server
+  ansible.builtin.copy:
+    src: files/named.zonetransfer.key.special
+    dest: /etc/named.zonetransfer.key
+    owner: root
+    group: named
+    mode: '0644'
+  notify: Restart named
+
+- name: Set /etc/named permissions
+  ansible.builtin.file:
+    path: /etc/named
+    owner: root
+    group: named
+    mode: '0670'
+  notify: Restart named
+
+- name: Set /etc/named/dynamic permissions
+  ansible.builtin.file:
+    path: /etc/named/dynamic
+    owner: root
+    group: named
+    mode: '0670'
+  notify: Restart named
+
+- name: Ensure named is running and enabled
+  ansible.builtin.systemd:
+    name: named
+    state: started
+    enabled: true

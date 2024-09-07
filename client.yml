@@ -1,0 +1,32 @@
+---
+- name: Copy resolv.conf to the client
+  ansible.builtin.copy:
+    src: files/client/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy rndc conf file
+  ansible.builtin.copy:
+    src: files/client/rndc.conf
+    dest: /home/vagrant/rndc.conf
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: Copy motd to the client
+  ansible.builtin.copy:
+    src: files/client/motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy transferkey to client
+  ansible.builtin.copy:
+    src: files/named.zonetransfer.key.special
+    dest: /etc/named.zonetransfer.key
+    owner: root
+    group: named
+    mode: '0644'

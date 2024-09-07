@@ -1,0 +1,13 @@
+---
+- name: Allow named to modify files in /etc/named/dynamic
+  community.general.sefcontext:
+    target: /etc/named/dynamic(/.*)?
+    setype: named_zone_t
+    state: present
+  notify: Apply new SELinux file context to /etc/named/dynamic
+
+- name: Set named_write_master_zones flag on and keep it persistent
+  ansible.posix.seboolean:
+    name: named_write_master_zones
+    state: true
+    persistent: true

@@ -1,0 +1,37 @@
+---
+- name: Part running on all hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Import tasks for all hosts
+      ansible.builtin.import_tasks: all.yml
+
+- name: Server ns01 provision
+  hosts: ns01
+  become: true
+  handlers:
+    - name: Restart named
+      ansible.builtin.systemd:
+        name: named
+        state: restarted
+  tasks:
+    - name: Import tasks for ns01 server
+      ansible.builtin.import_tasks: ns01.yml
+
+- name: First client provision
+  hosts: client
+  become: true
+  tasks:
+    - name: Import tasks for client
+      ansible.builtin.import_tasks: client.yml
+
+- name: Fix SELinux
+  hosts: ns01
+  become: true
+  handlers:
+    - name: Apply new SELinux file context to /etc/named/dynamic
+      ansible.builtin.command: restorecon -irv /etc/named/dynamic
+      changed_when: true
+  tasks:
+    - name: Import tasks for SELinux
+      ansible.builtin.import_tasks: selinux.yml
